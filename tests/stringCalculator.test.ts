@@ -30,5 +30,7 @@ describe('String Calculator', () => {
     test('should show all negative numbers in the error message', () => {
         expect(() => add("1,-2,-3")).toThrow("Negative numbers not allowed: -2, -3");
     });
-    
+    test('should ignore number grater than or equal to 1000', () => {
+        expect(add("2,1000,3,1001")).toBe(5);
+    });
 });
