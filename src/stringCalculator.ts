@@ -1,22 +1,38 @@
-
 export function add(numbers: string): number {
     if (!numbers) return 0;
-    let delimiter = /,|\n/;
-    ({ numbers, delimiter } = parseAndNumber(numbers, delimiter));
+    
+    let delimiterString = ',|\n';
+    let delimiter;
+    ({ numbers, delimiter } = parseAndNumber(numbers, delimiterString));
 
     const numArray = splitNumber(numbers, delimiter);
+    const filteredNumbers = ignoreNumberGreaterThan100(numArray); 
+    validateNumber(filteredNumbers);
 
-    validatNumber(numArray);
-
-    return numArray.reduce((acc, num) => acc + num, 0);
+    return filteredNumbers.reduce((acc, num) => acc + num, 0);
 }
 
-function parseAndNumber(numbers: string, delimiter: RegExp) {
+function ignoreNumberGreaterThan100(numArray: number[]) {
+    return numArray.filter(num => num < 1000);
+}
+
+function parseAndNumber(numbers: string, delimiterString: string) {
+    let delimiter = new RegExp(delimiterString);
+
     if (numbers.startsWith('//')) {
         const parts = numbers.split('\n');
-        delimiter = new RegExp(parts[0].slice(2));
-        numbers = parts[1];
+        const customDelimiter = parts[0].slice(2);
+
+        if (customDelimiter.startsWith('\\')) {
+            const delimiterChar = customDelimiter.slice(1);
+            delimiter = new RegExp(delimiterChar);
+        } else {
+            delimiter = new RegExp(customDelimiter + '|' + delimiterString);
+        }
+
+        numbers = parts.slice(1).join('\n');
     }
+
     return { numbers, delimiter };
 }
 
@@ -24,7 +40,7 @@ function splitNumber(numbers: string, delimiter: RegExp) {
     return numbers.split(delimiter).map(num => parseInt(num, 10));
 }
 
-function validatNumber(numArray: number[]) {
+function validateNumber(numArray: number[]) {
     const negativeNumbers = numArray.filter(num => num < 0);
     if (negativeNumbers.length > 0) {
         throw new Error(`Negative numbers not allowed: ${negativeNumbers.join(', ')}`);

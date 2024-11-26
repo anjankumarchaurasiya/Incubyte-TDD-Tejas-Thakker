@@ -33,4 +33,7 @@ describe('String Calculator', () => {
     test('should ignore number grater than or equal to 1000', () => {
         expect(add("2,1000,3,1001")).toBe(5);
     });
+    test('should handle input with mixed delimiter', () => {
+        expect(add("//;\n1;2,3\n4")).toBe(10);
+    });
 });
